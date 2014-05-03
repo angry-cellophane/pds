@@ -7,8 +7,15 @@ import static org.testng.Assert.*;
 public class ListTest {
 
     @Test
-    public void testSize() throws Exception {
+    public void testSizeEmptyList() throws Exception {
+        List<Integer> list = List.empty();
+        assertEquals(list.size(),0);
+    }
 
+    @Test
+    public void testSize5() throws Exception {
+        List<Integer> list = List.of(1,2,3,4,5);
+        assertEquals(list.size(),5);
     }
 
     @Test

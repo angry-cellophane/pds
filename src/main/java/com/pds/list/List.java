@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.ListIterator;
 
-public class List<E> implements java.util.List<E> {
+public final class List<E> implements java.util.List<E> {
 
     @Override
     public int size() {
@@ -120,4 +120,19 @@ public class List<E> implements java.util.List<E> {
     public java.util.List<E> subList(int fromIndex, int toIndex) {
         return null;
     }
+
+
+    public static <E> List<E> of(E ... values ) {
+        return null;
+    }
+
+    public static <E> List<E> of(java.util.List<E> list) {
+        return null;
+    }
+
+    public static <E> List<E> empty() {
+        return null;
+    }
+
+
 }
