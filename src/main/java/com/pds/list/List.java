@@ -3,124 +3,57 @@ package com.pds.list;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
-public final class List<E> implements java.util.List<E> {
+public interface List<E> {
 
-    @Override
-    public int size() {
-        return 0;
-    }
+    int size();
+    
+    boolean isEmpty();
 
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
+    E head();
 
-    @Override
-    public boolean contains(Object o) {
-        return false;
-    }
+    List<E> tail();
 
-    @Override
-    public Iterator<E> iterator() {
-        return null;
-    }
+    Iterator<E> iterator();
 
-    @Override
-    public Object[] toArray() {
-        return new Object[0];
-    }
+    Object[] toArray();
 
-    @Override
-    public <T> T[] toArray(T[] a) {
-        return null;
-    }
+    E[] toArray(E[] a);
 
-    @Override
-    public boolean add(E e) {
-        return false;
-    }
+    List<E> remove(E element);
 
-    @Override
-    public boolean remove(Object o) {
-        return false;
-    }
+    List<E> addAll(List<? extends E> c);
 
-    @Override
-    public boolean containsAll(Collection<?> c) {
-        return false;
-    }
+    List<E> removeAll(List<? super E> c);
 
-    @Override
-    public boolean addAll(Collection<? extends E> c) {
-        return false;
-    }
+    List<E> retainAll(List<? super E> c);
+    
+    List<E> add(E element);
 
-    @Override
-    public boolean addAll(int index, Collection<? extends E> c) {
-        return false;
-    }
+    ListIterator<E> listIterator();
 
-    @Override
-    public boolean removeAll(Collection<?> c) {
-        return false;
-    }
+    <R> List<R> map(Function<? super E,? extends R> mapper);
 
-    @Override
-    public boolean retainAll(Collection<?> c) {
-        return false;
-    }
+    <R> List<R> flatMap(Function<? super E, ? extends List<? extends R>> mapper);
 
-    @Override
-    public void clear() {
+    <R> R foldLeft(R initValue, BiFunction<? extends R, ? super E, ? extends R> foldFunction);
 
-    }
+    <R> R foldRight(R initValue, BiFunction<? extends R, ? super E, ? extends R> foldFunction);
 
-    @Override
-    public E get(int index) {
-        return null;
-    }
+    boolean anyMatch(Predicate<? super E> predicate);
 
-    @Override
-    public E set(int index, E element) {
-        return null;
-    }
+    boolean allMatch(Predicate<? super E> predicate);
 
-    @Override
-    public void add(int index, E element) {
+    List<E> filter(Predicate<? super E> predicate);
 
-    }
+    E find(Predicate<? super E> predicate);
 
-    @Override
-    public E remove(int index) {
-        return null;
-    }
+    boolean equals(Object that);
 
-    @Override
-    public int indexOf(Object o) {
-        return 0;
-    }
-
-    @Override
-    public int lastIndexOf(Object o) {
-        return 0;
-    }
-
-    @Override
-    public ListIterator<E> listIterator() {
-        return null;
-    }
-
-    @Override
-    public ListIterator<E> listIterator(int index) {
-        return null;
-    }
-
-    @Override
-    public java.util.List<E> subList(int fromIndex, int toIndex) {
-        return null;
-    }
-
+    int hashcode();
 
     public static <E> List<E> of(E ... values ) {
         return null;
@@ -133,6 +66,5 @@ public final class List<E> implements java.util.List<E> {
     public static <E> List<E> empty() {
         return null;
     }
-
 
 }
