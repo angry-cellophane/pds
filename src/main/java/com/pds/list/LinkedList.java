@@ -47,6 +47,26 @@ public class LinkedList<E> implements List<E> {
         public E value() {
             return this.value;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Some some = (Some) o;
+
+            if (!next.equals(some.next)) return false;
+            if (!value.equals(some.value)) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = value.hashCode();
+            result = 31 * result + next.hashCode();
+            return result;
+        }
     }
 
     private static enum Nill implements Node {
@@ -77,12 +97,14 @@ public class LinkedList<E> implements List<E> {
 
         @Override
         public boolean hasNext() {
-            return !currentNode.next().isNill();
+            return !currentNode.isNill();
         }
 
         @Override
         public E next() {
-            return (currentNode = currentNode.next()).value();
+            E value = currentNode.value();
+            currentNode = currentNode.next();
+            return value;
         }
     }
 
@@ -176,17 +198,20 @@ public class LinkedList<E> implements List<E> {
             node = i == 0 ? this.head : node.next();
             @SuppressWarnings("unchecked") E oldValue = (E) node.value();
             @SuppressWarnings("unchecked") R[] values = (R[]) mapper.apply(oldValue).toArray();
-            newValues[i] = values;
+            newValues[i] = (R[]) new Object[values.length];
+            System.arraycopy(values, 0, newValues[i], 0, values.length);
         }
 
+        int size = 0;
         Node<R> newListHead = Node.nill();
         for (int i = this.size - 1; i >= 0 ; i--) {
             R[] values = newValues[i];
-            for (int j = values.length; j >=0 ; j--) {
+            size += values.length;
+            for (int j = values.length - 1; j >=0 ; j--) {
                 newListHead = Node.create(newListHead, values[j]);
             }
         }
-        return new LinkedList<>(newListHead, this.size);
+        return new LinkedList<>(newListHead, size);
     }
 
     @Override
@@ -242,6 +267,27 @@ public class LinkedList<E> implements List<E> {
             if (predicate.test(value)) return Optional.of(value);
         }
         return Optional.empty();
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LinkedList that = (LinkedList) o;
+
+        if (size != that.size) return false;
+        if (!head.equals(that.head)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = size;
+        result = 31 * result + head.hashCode();
+        return result;
     }
 
     static <E> List<E> nill(){
