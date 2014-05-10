@@ -2,11 +2,8 @@ package com.pds.list;
 
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Optional;
-import java.util.function.Function;
 
 import static org.testng.Assert.*;
 
