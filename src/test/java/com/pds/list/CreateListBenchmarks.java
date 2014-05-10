@@ -32,8 +32,8 @@ public class CreateListBenchmarks {
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()
                 .include(".*"+CreateListBenchmarks.class.getSimpleName() + ".*")
-                .warmupIterations(10)
-                .measurementIterations(10)
+                .warmupIterations(30)
+                .measurementIterations(30)
                 .forks(1)
                 .build();
 
