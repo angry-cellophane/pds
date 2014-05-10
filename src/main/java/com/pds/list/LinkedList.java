@@ -107,7 +107,14 @@ public class LinkedList<E> implements List<E> {
 
     @Override
     public Object[] toArray() {
-        return new Object[0];
+        Object[] values = new Object[this.size];
+
+        Node<E> node = null;
+        for (int i = 0; i < this.size; i++) {
+            node = i == 0 ? this.head : node.next();
+            values[i] = node.value();
+        }
+        return values;
     }
 
     @Override
