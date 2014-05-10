@@ -43,15 +43,16 @@ public interface List<E> extends Iterable<E> {
 
     public static <E> List<E> of(E ... values ) {
         List<E> list = LinkedList.nill();
-        for (E value : values) {
-            list = list.add(value);
+        for (int i = values.length -1; i >= 0 ; i--) {
+            list = list.add(values[i]);
         }
         return list;
     }
 
     public static <E> List<E> of(java.util.List<E> originalList) {
         List<E> list = LinkedList.nill();
-        for (E value : originalList) {
+        for (ListIterator<E> it = originalList.listIterator(originalList.size()); it.hasPrevious();){
+            E value = it.previous();
             list = list.add(value);
         }
         return list;
