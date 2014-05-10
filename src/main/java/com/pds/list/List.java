@@ -1,6 +1,5 @@
 package com.pds.list;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.function.BiFunction;
@@ -22,18 +21,8 @@ public interface List<E> {
     Object[] toArray();
 
     E[] toArray(E[] a);
-
-    List<E> remove(E element);
-
-    List<E> addAll(List<? extends E> c);
-
-    List<E> removeAll(List<? super E> c);
-
-    List<E> retainAll(List<? super E> c);
     
     List<E> add(E element);
-
-    ListIterator<E> listIterator();
 
     <R> List<R> map(Function<? super E,? extends R> mapper);
 
@@ -50,10 +39,6 @@ public interface List<E> {
     List<E> filter(Predicate<? super E> predicate);
 
     E find(Predicate<? super E> predicate);
-
-    boolean equals(Object that);
-
-    int hashcode();
 
     public static <E> List<E> of(E ... values ) {
         return null;
