@@ -1,8 +1,6 @@
 package com.pds.list;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -118,8 +116,13 @@ public class LinkedList<E> implements List<E> {
     }
 
     @Override
-    public E[] toArray(E[] a) {
-        return null;
+    public E[] toArray(E[] values) {
+        Node<E> node = null;
+        for (int i = 0; i < this.size; i++) {
+            node = i == 0 ? this.head : node.next();
+            values[i] = node.value();
+        }
+        return values;
     }
 
 
