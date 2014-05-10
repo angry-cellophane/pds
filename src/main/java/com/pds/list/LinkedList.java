@@ -243,4 +243,8 @@ public class LinkedList<E> implements List<E> {
         }
         return Optional.empty();
     }
+
+    static <E> List<E> nill(){
+        return new LinkedList<>(Node.nill(), 0);
+    }
 }
