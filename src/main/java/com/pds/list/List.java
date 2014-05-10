@@ -42,15 +42,23 @@ public interface List<E> extends Iterable<E> {
     Optional<E> find(Predicate<? super E> predicate);
 
     public static <E> List<E> of(E ... values ) {
-        return null;
+        List<E> list = LinkedList.nill();
+        for (E value : values) {
+            list = list.add(value);
+        }
+        return list;
     }
 
-    public static <E> List<E> of(java.util.List<E> list) {
-        return null;
+    public static <E> List<E> of(java.util.List<E> originalList) {
+        List<E> list = LinkedList.nill();
+        for (E value : originalList) {
+            list = list.add(value);
+        }
+        return list;
     }
 
     public static <E> List<E> empty() {
-        return null;
+        return LinkedList.nill();
     }
 
 }
