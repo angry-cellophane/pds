@@ -1,6 +1,7 @@
 package com.pds.list;
 
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -17,8 +18,7 @@ public class LinkedList<E> implements List<E> {
         }
 
         static <E> Node<E> nill(){
-            @SuppressWarnings("unchecked")
-            Node<E> node = (Node<E>) Nill.INSTANCE;
+            @SuppressWarnings("unchecked") Node<E> node = (Node<E>) Nill.INSTANCE;
             return node;
         }
     }
@@ -88,11 +88,9 @@ public class LinkedList<E> implements List<E> {
 
     private final int size;
     private final Node<E> head;
-    private final Node<E> tail;
 
-    private LinkedList(Node<E> head, Node<E> tail, int size) {
+    private LinkedList(Node<E> head, int size) {
         this.head = head;
-        this.tail = tail;
         this.size = size;
     }
 
@@ -113,7 +111,7 @@ public class LinkedList<E> implements List<E> {
 
     @Override
     public List<E> tail() {
-        return new LinkedList<>(head.next(), tail, size - 1);
+        return new LinkedList<>(head.next(), size - 1);
     }
 
     @Override
@@ -146,7 +144,7 @@ public class LinkedList<E> implements List<E> {
 
     @Override
     public List<E> add(E element) {
-        return new LinkedList<>(Node.create(this.head, element), this.tail, size + 1);
+        return new LinkedList<>(Node.create(this.head, element), size + 1);
     }
 
     @Override
@@ -162,11 +160,10 @@ public class LinkedList<E> implements List<E> {
         }
 
         Node<R> newListHead = Node.nill();
-        Node<R> newListTail = newListHead;
         for (int i = this.size - 1; i >= 0 ; i--) {
             newListHead = Node.create(newListHead, newValues[i]);
         }
-        return new LinkedList<>(newListHead, newListTail, this.size);
+        return new LinkedList<>(newListHead, this.size);
     }
 
     @Override
@@ -183,43 +180,67 @@ public class LinkedList<E> implements List<E> {
         }
 
         Node<R> newListHead = Node.nill();
-        Node<R> newListTail = newListHead;
         for (int i = this.size - 1; i >= 0 ; i--) {
             R[] values = newValues[i];
             for (int j = values.length; j >=0 ; j--) {
                 newListHead = Node.create(newListHead, values[j]);
             }
         }
-        return new LinkedList<>(newListHead, newListTail, this.size);
+        return new LinkedList<>(newListHead, this.size);
     }
 
     @Override
-    public <R> R foldLeft(R initValue, BiFunction<? extends R, ? super E, ? extends R> foldFunction) {
-        return null;
+    public <R> R foldLeft(R identity, BiFunction<R, ? super E, R> foldFunction) {
+        R base = identity;
+        for (E value : this) {
+            base = foldFunction.apply(base, value);
+        }
+        return base;
     }
 
     @Override
-    public <R> R foldRight(R initValue, BiFunction<? extends R, ? super E, ? extends R> foldFunction) {
-        return null;
+    public <R> R foldRight(R identity, BiFunction<R, ? super E, R> foldFunction) {
+        R base = identity;
+        @SuppressWarnings("unchecked") E[] values = toArray((E[]) new Object[this.size]);
+        for (int i = values.length - 1; i >=0 ; i--) {
+            base = foldFunction.apply(base, values[i]);
+        }
+        return base;
     }
 
     @Override
     public boolean anyMatch(Predicate<? super E> predicate) {
-        return false;
+        return !allMatch(predicate.negate());
     }
 
     @Override
     public boolean allMatch(Predicate<? super E> predicate) {
-        return false;
+        for (E value : this) {
+            if (!predicate.test(value)) return false;
+        }
+        return true;
     }
 
     @Override
     public List<E> filter(Predicate<? super E> predicate) {
-        return null;
+        @SuppressWarnings("unchecked") E[] values = toArray((E[])new Object[this.size]);
+
+        Node<E> head = Node.nill();
+        int size = 0;
+        for (int i = values.length - 1; i >= 0; i--) {
+            if (predicate.test(values[i])) {
+                head = Node.create(head, values[i]);
+                size ++;
+            }
+        }
+        return new LinkedList<>(head, size);
     }
 
     @Override
-    public E find(Predicate<? super E> predicate) {
-        return null;
+    public Optional<E> find(Predicate<? super E> predicate) {
+        for (E value : this) {
+            if (predicate.test(value)) return Optional.of(value);
+        }
+        return Optional.empty();
     }
 }
