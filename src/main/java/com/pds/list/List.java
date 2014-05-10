@@ -2,6 +2,7 @@ package com.pds.list;
 
 import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -28,9 +29,9 @@ public interface List<E> extends Iterable<E> {
 
     <R> List<R> flatMap(Function<? super E, ? extends List<? extends R>> mapper);
 
-    <R> R foldLeft(R initValue, BiFunction<? extends R, ? super E, ? extends R> foldFunction);
+    <R> R foldLeft(R identity, BiFunction<R, ? super E, R> foldFunction);
 
-    <R> R foldRight(R initValue, BiFunction<? extends R, ? super E, ? extends R> foldFunction);
+    <R> R foldRight(R identity, BiFunction<R, ? super E, R> foldFunction);
 
     boolean anyMatch(Predicate<? super E> predicate);
 
@@ -38,7 +39,7 @@ public interface List<E> extends Iterable<E> {
 
     List<E> filter(Predicate<? super E> predicate);
 
-    E find(Predicate<? super E> predicate);
+    Optional<E> find(Predicate<? super E> predicate);
 
     public static <E> List<E> of(E ... values ) {
         return null;
