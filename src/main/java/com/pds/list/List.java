@@ -6,7 +6,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public interface List<E> {
+public interface List<E> extends Iterable<E> {
 
     int size();
     

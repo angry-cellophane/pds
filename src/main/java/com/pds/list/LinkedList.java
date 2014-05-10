@@ -68,6 +68,24 @@ public class LinkedList<E> implements List<E> {
         }
     }
 
+    private static class LinkedListIterator<E> implements Iterator<E>{
+        private Node<E> currentNode;
+
+        private LinkedListIterator(Node<E> head) {
+            this.currentNode = head;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return !currentNode.next().isNill();
+        }
+
+        @Override
+        public E next() {
+            return (currentNode = currentNode.next()).value();
+        }
+    }
+
     private final int size;
     private final Node<E> head;
     private final Node<E> tail;
@@ -100,7 +118,7 @@ public class LinkedList<E> implements List<E> {
 
     @Override
     public Iterator<E> iterator() {
-        return null;
+        return new LinkedListIterator<>(head);
     }
 
     @Override
