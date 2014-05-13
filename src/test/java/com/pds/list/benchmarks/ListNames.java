@@ -1,4 +1,4 @@
-package com.pds.list;
+package com.pds.list.benchmarks;
 
 /**
  * Created by alexander on 10.05.14.

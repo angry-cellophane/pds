@@ -58,8 +58,29 @@ public interface List<E> extends Iterable<E> {
         return list;
     }
 
+
+    public static <E> List<E> matrixList(E ... values ) {
+        List<E> list = MatrixList.empty();
+        for (int i = values.length -1; i >= 0 ; i--) {
+            list = list.add(values[i]);
+        }
+        return list;
+    }
+
+    public static <E> List<E> matrixList(java.util.List<E> originalList) {
+        List<E> list = MatrixList.empty();
+        for (ListIterator<E> it = originalList.listIterator(originalList.size()); it.hasPrevious();){
+            E value = it.previous();
+            list = list.add(value);
+        }
+        return list;
+    }
+
     public static <E> List<E> empty() {
         return LinkedList.nill();
     }
 
+    public static <E> List<E> emptyMatrixList() {
+        return MatrixList.empty();
+    }
 }

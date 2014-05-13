@@ -1,11 +1,13 @@
-package com.pds.list;
+package com.pds.list.benchmarks;
+
+import com.pds.list.List;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-import static com.pds.list.ListNames.ARRAY_LIST;
-import static com.pds.list.ListNames.LINKED_LIST;
-import static com.pds.list.ListNames.PDS_LINKED_LIST;
+import static com.pds.list.benchmarks.ListNames.ARRAY_LIST;
+import static com.pds.list.benchmarks.ListNames.LINKED_LIST;
+import static com.pds.list.benchmarks.ListNames.PDS_LINKED_LIST;
 
 /**
  * Created by alexander on 10.05.14.
