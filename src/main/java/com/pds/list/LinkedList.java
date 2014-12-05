@@ -1,5 +1,7 @@
 package com.pds.list;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -167,6 +169,16 @@ public class LinkedList<E> implements List<E> {
     @Override
     public List<E> add(E element) {
         return new LinkedList<>(Node.create(this.head, element), size + 1);
+    }
+
+    @Override
+    public List<E> addAll(List<E> elements) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public List<E> addAll(E... elements) {
+        throw new NotImplementedException();
     }
 
     @Override

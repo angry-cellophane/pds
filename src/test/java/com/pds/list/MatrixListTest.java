@@ -98,9 +98,9 @@ public class MatrixListTest {
         List<Integer> list = List.matrixList(2, 3, 4);
         assertEquals(list.size(),3);
 
-        list.add(1);
-        assertEquals(list.size(),4);
-        assertEquals(list.head(), Integer.valueOf(1));
+        List<Integer> newList = list.add(1);
+        assertEquals(newList.size(),4);
+        assertEquals(newList.head(), Integer.valueOf(1));
     }
 
     @Test

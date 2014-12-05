@@ -25,6 +25,10 @@ public interface List<E> extends Iterable<E> {
     
     List<E> add(E element);
 
+    List<E> addAll(List<E> elements);
+
+    List<E> addAll(E... elements);
+
     <R> List<R> map(Function<? super E,? extends R> mapper);
 
     <R> List<R> flatMap(Function<? super E, ? extends List<? extends R>> mapper);
