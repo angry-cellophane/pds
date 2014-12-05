@@ -12,16 +12,18 @@ import java.util.function.Predicate;
 public class MatrixList<E> implements List<E> {
 
     private static class Chunk<E> {
-        private static final Chunk<?> EMPTY = new Chunk<>(null, null, 0);
+        private static final Chunk<?> EMPTY = new Chunk<>(null, null, -1, 0);
 
         private final Chunk<E> next;
         private final E[] values;
+        private final int firstValueIndex;
         private final int valuesCount;
 
-        private Chunk(Chunk<E> next, E[] values, int valuesCount) {
+        private Chunk(Chunk<E> next, E[] values, int firstValueIndex, int valuesCount) {
             this.next = next;
             this.values = values;
             this.valuesCount = valuesCount;
+            this.firstValueIndex = firstValueIndex;
         }
 
         private static <E> Chunk<E> empty(){
@@ -50,7 +52,8 @@ public class MatrixList<E> implements List<E> {
         int size = 0;
         Chunk<E> current = headChunk;
         while (current != Chunk.EMPTY) {
-            size += current.values.length;
+            size += current.valuesCount - current.firstValueIndex;
+            current = current.next;
         }
         return size;
     }
@@ -78,7 +81,10 @@ public class MatrixList<E> implements List<E> {
 
         if (headChunk.valuesCount == 1) return new MatrixList<>(headChunk.next, headChunk.next.valuesCount);
 
-        Chunk<E> tailChunk = new Chunk<>(headChunk.next, headChunk.values, headChunk.valuesCount -1);
+        Chunk<E> tailChunk = new Chunk<>(headChunk.next,
+                headChunk.values,
+                headChunk.firstValueIndex + 1,
+                headChunk.valuesCount);
         return new MatrixList<>(tailChunk);
     }
 
@@ -147,6 +153,13 @@ public class MatrixList<E> implements List<E> {
     }
 
     public static <E> List<E> of(E ... values) {
-        throw new NotImplementedException();
+        Chunk<E> head = Chunk.empty();
+        for (int i = 0; i < values.length; i+= CHUNK_SIZE) {
+            int size = Math.min(CHUNK_SIZE, values.length);
+            @SuppressWarnings("unchecked") E[] newValues = (E[]) new Object[size];
+            System.arraycopy(values,i,newValues,0, size);
+            head = new Chunk<>(head, newValues, 0, size);
+        }
+        return new MatrixList<>(head);
     }
 }

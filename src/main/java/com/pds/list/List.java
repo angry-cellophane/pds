@@ -60,11 +60,7 @@ public interface List<E> extends Iterable<E> {
 
 
     public static <E> List<E> matrixList(E ... values ) {
-        List<E> list = MatrixList.empty();
-        for (int i = values.length -1; i >= 0 ; i--) {
-            list = list.add(values[i]);
-        }
-        return list;
+        return MatrixList.of(values);
     }
 
     public static <E> List<E> matrixList(java.util.List<E> originalList) {
