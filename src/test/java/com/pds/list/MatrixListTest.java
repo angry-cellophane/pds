@@ -63,7 +63,7 @@ public class MatrixListTest {
     public void testTail() throws Exception {
         Integer[] ints = new Integer[] {4,3,2,1};
         List<Integer> list = List.matrixList(ints);
-        assertEquals(list.tail(), Arrays.asList(3,2,1));
+        assertEquals(list.tail(), List.matrixList(3,2,1));
     }
 
     @Test
@@ -76,7 +76,6 @@ public class MatrixListTest {
             count ++;
         }
         assertEquals(count, list.size());
-
     }
 
     @Test
