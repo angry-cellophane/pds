@@ -19,6 +19,7 @@ public class MatrixList<E> implements List<E> {
         private final Chunk<E> next;
         private final E[] values;
         private final int firstValueIndex;
+        private int hashCode;
 
         private Chunk(Chunk<E> next, E[] values, int firstValueIndex) {
             this.next = next;
@@ -42,12 +43,14 @@ public class MatrixList<E> implements List<E> {
 
         @Override
         public int hashCode() {
+            if (hashCode > 0 || this == EMPTY) return hashCode;
+
             if (this == EMPTY) return 0;
 
-            int result = next.hashCode();
-            result = 31 * result + Arrays.hashCode(values);
-            result = 31 * result + firstValueIndex;
-            return result;
+            hashCode = next.hashCode();
+            hashCode = 31 * hashCode + Arrays.hashCode(values);
+            hashCode = 31 * hashCode + firstValueIndex;
+            return hashCode;
         }
 
         private static <E> Chunk<E> empty(){
@@ -62,6 +65,7 @@ public class MatrixList<E> implements List<E> {
     private final int chunkSize;
     private final Chunk<E> headChunk;
     private final int size;
+    private int hash;
 
     MatrixList(Chunk<E> chunk, int chunkSize, int size){
         this.chunkSize = chunkSize;
@@ -181,7 +185,27 @@ public class MatrixList<E> implements List<E> {
 
     @Override
     public <R> List<R> map(Function<? super E, ? extends R> mapper) {
-        return null;
+        if (this == EMPTY) return empty();
+
+        int chunkCount = size / chunkSize;
+        if (size % chunkSize != 0) chunkCount++;
+        @SuppressWarnings("unchecked") R[][] newValues = (R[][]) new Object[chunkCount][];
+        Chunk<E> c = headChunk;
+        int chunkNumber = 0;
+        while (c != Chunk.EMPTY) {
+            @SuppressWarnings("unchecked") R[] newChunkValues = (R[]) new Object[c.values.length];
+            for (int i = 0; i < c.values.length; i++) {
+                newChunkValues[i] = mapper.apply(c.values[i]);
+            }
+            newValues[chunkNumber] = newChunkValues;
+            c = c.next;
+        }
+        Chunk<R> p = Chunk.empty();
+        for (int i = newValues.length - 1; i >= 1; i--) {
+            p = new Chunk<>(p, newValues[i], 0);
+        }
+        p = new Chunk<>(p, newValues[0], headChunk.firstValueIndex);
+        return new MatrixList<R>(p, chunkSize, size);
     }
 
     @Override
@@ -247,9 +271,11 @@ public class MatrixList<E> implements List<E> {
 
     @Override
     public int hashCode() {
-        int result = headChunk.hashCode();
-        result = 31 * result + size;
-        return result;
+        if (hash != 0 || headChunk == Chunk.empty()) return hash;
+
+        hash = headChunk.hashCode();
+        hash = 31 * hash + size;
+        return hash;
     }
 
     public static <E> List<E> empty(){
