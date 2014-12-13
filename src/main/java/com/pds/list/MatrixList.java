@@ -13,13 +13,13 @@ import java.util.function.Predicate;
 public class MatrixList<E> implements List<E> {
 
     @Immutable
-    private static class Chunk<E> {
-        private static final Chunk<?> EMPTY = new Chunk<>(null, null, 0);
+    protected static class Chunk<E> {
+        protected static final Chunk<?> EMPTY = new Chunk<>(null, null, 0);
 
-        private final Chunk<E> next;
-        private final E[] values;
-        private final int firstValueIndex;
-        private int hashCode;
+        protected final Chunk<E> next;
+        protected final E[] values;
+        protected final int firstValueIndex;
+        protected int hashCode;
 
         private Chunk(Chunk<E> next, E[] values, int firstValueIndex) {
             this.next = next;
@@ -58,6 +58,36 @@ public class MatrixList<E> implements List<E> {
             return empty;
         }
     }
+
+    protected class MatrixListIterator implements Iterator<E> {
+
+        protected Chunk<E> chunk;
+        protected int index;
+
+        {
+            chunk = headChunk;
+            index = headChunk.firstValueIndex - 1;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return index != chunk.values.length - 1
+                    || chunk.next != Chunk.EMPTY;
+        }
+
+        @Override
+        public E next() {
+            if (index != chunk.values.length - 1) {
+                index ++;
+            } else {
+                chunk = chunk.next;
+                if (chunk == Chunk.EMPTY) throw new IllegalStateException("Can not get a next element of the empty list");
+
+                index = chunk.firstValueIndex;
+            }
+            return chunk.values[index];
+        }
+    };
 
     private static final int CHUNK_SIZE = 16;
     private static final MatrixList<?> EMPTY = new MatrixList<Object>(Chunk.empty(), 0);
@@ -107,35 +137,7 @@ public class MatrixList<E> implements List<E> {
 
     @Override
     public Iterator<E> iterator() {
-        return new Iterator<E>() {
-
-            private Chunk<E> chunk;
-            private int index;
-
-            {
-                chunk = headChunk;
-                index = headChunk.firstValueIndex - 1;
-            }
-
-            @Override
-            public boolean hasNext() {
-                return index != chunk.values.length - 1
-                        || chunk.next != Chunk.EMPTY;
-            }
-
-            @Override
-            public E next() {
-                if (index != chunk.values.length - 1) {
-                    index ++;
-                } else {
-                    chunk = chunk.next;
-                    if (chunk == Chunk.EMPTY) throw new IllegalStateException("Can not get a next element of the empty list");
-
-                    index = chunk.firstValueIndex;
-                }
-                return chunk.values[index];
-            }
-        };
+        return new MatrixListIterator();
     }
 
     @Override
@@ -241,7 +243,7 @@ public class MatrixList<E> implements List<E> {
 
     @Override
     public List<E> filter(Predicate<? super E> predicate) {
-        throw new NotImplementedException();
+        return new LazyFilteredMatrixList<E>(headChunk, chunkSize, size, predicate);
     }
 
     @Override
@@ -255,11 +257,11 @@ public class MatrixList<E> implements List<E> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || !(o instanceof MatrixList)) return false;
 
         @SuppressWarnings("unchecked") MatrixList<E> that = (MatrixList<E>) o;
 
-        if (size != that.size) return false;
+        if (size != that.size()) return false;
         for (Iterator<E> it1 = this.iterator(), it2 = that.iterator(); it1.hasNext() && it2.hasNext(); ) {
             E el1 = it1.next();
             E el2 = it2.next();
