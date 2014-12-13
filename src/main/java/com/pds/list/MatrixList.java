@@ -221,7 +221,11 @@ public class MatrixList<E> implements List<E> {
 
     @Override
     public <R> R foldLeft(R identity, BiFunction<R, ? super E, R> foldFunction) {
-        return null;
+        R aggregator = identity;
+        for (E e : this) {
+            aggregator = foldFunction.apply(aggregator, e);
+        }
+        return aggregator;
     }
 
     @Override
