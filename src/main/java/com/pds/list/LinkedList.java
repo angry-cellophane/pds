@@ -1,7 +1,9 @@
 package com.pds.list;
 
+import sun.misc.Unsafe;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -110,6 +112,21 @@ public class LinkedList<E> implements List<E> {
         }
     }
 
+    private static final Unsafe U;
+    private static final long someNextFieldOffset;
+
+    static {
+        try {
+            Field field = Unsafe.class.getDeclaredField("theUnsafe");
+            field.setAccessible(true);
+            U = (Unsafe) field.get(null);
+            Field nextField = Some.class.getDeclaredField("next");
+            someNextFieldOffset = U.objectFieldOffset(nextField);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private final int size;
     private final Node<E> head;
 
@@ -173,12 +190,32 @@ public class LinkedList<E> implements List<E> {
 
     @Override
     public List<E> addAll(List<E> elements) {
-        throw new NotImplementedException();
+        Node<E> head = null;
+        Node<E> last = null;
+        for (E el : elements) {
+            Node<E> newNode = Node.create(null, el);
+            if (head == null) {
+                head = newNode;
+            }
+            if (last == null) {
+                last = newNode;
+            } else {
+                U.putObject(last, someNextFieldOffset, newNode);
+                last = newNode;
+            }
+        }
+        U.putObject(last, someNextFieldOffset, this.head);
+        return new LinkedList<>(head, size + elements.size());
     }
 
     @Override
     public List<E> addAll(E... elements) {
-        throw new NotImplementedException();
+        Node<E> newHead = head;
+        for (int i = elements.length - 1; i >= 0; i--) {
+            E el = elements[i];
+            newHead = Node.create(newHead, el);
+        }
+        return new LinkedList<E>(newHead, size + elements.length);
     }
 
     @Override

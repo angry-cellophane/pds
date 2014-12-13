@@ -83,6 +83,21 @@ public class LinkedListTest {
     }
 
     @Test
+    public void testAddAllList() throws Exception {
+        List<Integer> list = List.of(5,6,7,8,9);
+        List<Integer> additionalList = List.of(0,1,2,3,4);
+        List<Integer> newList = list.addAll(additionalList);
+        assertEquals(newList, List.of(0,1,2,3,4,5,6,7,8,9));
+    }
+
+    @Test
+    public void testAddAllArray() throws Exception {
+        List<Integer> list = List.of(5,6,7,8,9);
+        List<Integer> newList = list.addAll(0,1,2,3,4);
+        assertEquals(newList, List.of(0,1,2,3,4,5,6,7,8,9));
+    }
+
+    @Test
     public void testMap() throws Exception {
         List<Integer> list = List.of(0,1,2,3,4);
         List<Integer> newList = list.map( x -> x * 2);
