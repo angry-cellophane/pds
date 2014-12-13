@@ -12,7 +12,7 @@ import java.util.function.Predicate;
 
 public class LinkedList<E> implements List<E> {
 
-    private static interface Node<E> {
+    protected static interface Node<E> {
         boolean isNill();
         Node<E> next();
         E value();
@@ -27,7 +27,7 @@ public class LinkedList<E> implements List<E> {
         }
     }
 
-    private static final class Some<E> implements Node<E> {
+    protected static final class Some<E> implements Node<E> {
 
         private final E value;
         private final Node<E> next;
@@ -73,7 +73,7 @@ public class LinkedList<E> implements List<E> {
         }
     }
 
-    private static enum Nill implements Node {
+    protected static enum Nill implements Node {
         INSTANCE;
 
         @Override
@@ -92,7 +92,7 @@ public class LinkedList<E> implements List<E> {
         }
     }
 
-    private static class LinkedListIterator<E> implements Iterator<E>{
+    protected static class LinkedListIterator<E> implements Iterator<E>{
         private Node<E> currentNode;
 
         private LinkedListIterator(Node<E> head) {
@@ -109,21 +109,6 @@ public class LinkedList<E> implements List<E> {
             E value = currentNode.value();
             currentNode = currentNode.next();
             return value;
-        }
-    }
-
-    private static final Unsafe U;
-    private static final long someNextFieldOffset;
-
-    static {
-        try {
-            Field field = Unsafe.class.getDeclaredField("theUnsafe");
-            field.setAccessible(true);
-            U = (Unsafe) field.get(null);
-            Field nextField = Some.class.getDeclaredField("next");
-            someNextFieldOffset = U.objectFieldOffset(nextField);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -200,11 +185,11 @@ public class LinkedList<E> implements List<E> {
             if (last == null) {
                 last = newNode;
             } else {
-                U.putObject(last, someNextFieldOffset, newNode);
+                UnsafeUtils.writeNextNode((Some<E>)last, newNode);
                 last = newNode;
             }
         }
-        U.putObject(last, someNextFieldOffset, this.head);
+        UnsafeUtils.writeNextNode((Some<E>)last, this.head);
         return new LinkedList<>(head, size + elements.size());
     }
 

@@ -90,7 +90,7 @@ public class MatrixList<E> implements List<E> {
     };
 
     private static final int CHUNK_SIZE = 16;
-    private static final MatrixList<?> EMPTY = new MatrixList<Object>(Chunk.empty(), 0);
+    private static final MatrixList<?> EMPTY = new MatrixList<>(Chunk.empty(), 0);
 
     private final int chunkSize;
     private final Chunk<E> headChunk;
