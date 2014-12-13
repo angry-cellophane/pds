@@ -3,9 +3,7 @@ package com.pds.list;
 import com.pds.annotations.Immutable;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -97,10 +95,13 @@ public class MatrixList<E> implements List<E> {
     private final int size; // don't use directly!! inheritances overrides size calculation!!
     private int hash;
 
+    private final Map<Op, MatrixList<E>> cache;
+
     MatrixList(Chunk<E> chunk, int chunkSize, int size){
         this.chunkSize = chunkSize;
         this.headChunk = chunk;
         this.size = size;
+        this.cache = new WeakHashMap<>();
     }
 
     MatrixList(Chunk<E> chunk, int size) {

@@ -86,4 +86,8 @@ public interface List<E> extends Iterable<E> {
         return MatrixList.empty();
     }
 
+    public static <E> List<E> cached(List<E> list) {
+        return new CachedWrapper<>(list);
+    }
+
 }
