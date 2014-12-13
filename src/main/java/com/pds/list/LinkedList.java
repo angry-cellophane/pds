@@ -1,9 +1,5 @@
 package com.pds.list;
 
-import sun.misc.Unsafe;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -185,11 +181,11 @@ public class LinkedList<E> implements List<E> {
             if (last == null) {
                 last = newNode;
             } else {
-                UnsafeUtils.writeNextNode((Some<E>)last, newNode);
+                UnsafeUtils.putNextNode((Some<E>) last, newNode);
                 last = newNode;
             }
         }
-        UnsafeUtils.writeNextNode((Some<E>)last, this.head);
+        UnsafeUtils.putNextNode((Some<E>) last, this.head);
         return new LinkedList<>(head, size + elements.size());
     }
 

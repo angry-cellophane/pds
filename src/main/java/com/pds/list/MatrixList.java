@@ -94,7 +94,7 @@ public class MatrixList<E> implements List<E> {
 
     private final int chunkSize;
     private final Chunk<E> headChunk;
-    private final int size;
+    private final int size; // don't use directly!! inheritances overrides size calculation!!
     private int hash;
 
     MatrixList(Chunk<E> chunk, int chunkSize, int size){
@@ -127,12 +127,12 @@ public class MatrixList<E> implements List<E> {
     public List<E> tail() {
         if (headChunk == Chunk.EMPTY) throw new IllegalStateException();
         if (size == 1) return empty();
-        if (headChunk.firstValueIndex == headChunk.values.length - 1) return new MatrixList<>(headChunk.next, size - 1);
+        if (headChunk.firstValueIndex == headChunk.values.length - 1) return new MatrixList<>(headChunk.next, size() - 1);
 
         Chunk<E> tailChunk = new Chunk<>(headChunk.next,
                 headChunk.values,
                 headChunk.firstValueIndex + 1);
-        return new MatrixList<>(tailChunk, size - 1);
+        return new MatrixList<>(tailChunk, size() - 1);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class MatrixList<E> implements List<E> {
 
     @Override
     public Object[] toArray() {
-        @SuppressWarnings("unchecked") E[] newArray = (E[])new Object[size];
+        @SuppressWarnings("unchecked") E[] newArray = (E[])new Object[size()];
         return toArray(newArray);
     }
 
@@ -172,7 +172,7 @@ public class MatrixList<E> implements List<E> {
             valueCopy[newFirstValueIndex] = element;
             newChunk = new Chunk<>(headChunk.next, valueCopy, newFirstValueIndex);
         }
-        return new MatrixList<>(newChunk, size + 1);
+        return new MatrixList<>(newChunk, size() + 1);
     }
 
     @Override
@@ -189,25 +189,29 @@ public class MatrixList<E> implements List<E> {
     public <R> List<R> map(Function<? super E, ? extends R> mapper) {
         if (this == EMPTY) return empty();
 
-        int chunkCount = size / chunkSize;
-        if (size % chunkSize != 0) chunkCount++;
-        @SuppressWarnings("unchecked") R[][] newValues = (R[][]) new Object[chunkCount][];
-        Chunk<E> c = headChunk;
-        int chunkNumber = 0;
-        while (c != Chunk.EMPTY) {
-            @SuppressWarnings("unchecked") R[] newChunkValues = (R[]) new Object[c.values.length];
-            for (int i = 0; i < c.values.length; i++) {
-                newChunkValues[i] = mapper.apply(c.values[i]);
+        Chunk<E> originalChunk = headChunk;
+        Chunk<R> newHeadChunk = null;
+        Chunk<R> newLastChunk = null;
+        while (originalChunk != Chunk.EMPTY) {
+            @SuppressWarnings("unckecked") R[] newValues = (R[]) new Object[originalChunk.values.length];
+            for (int i = 0; i < newValues.length; i++) {
+                newValues[i] = mapper.apply(originalChunk.values[i]);
             }
-            newValues[chunkNumber] = newChunkValues;
-            c = c.next;
+            Chunk<R> newChunk = new Chunk<R>(null, newValues, originalChunk.firstValueIndex);
+            if (newHeadChunk == null) {
+                newHeadChunk = newChunk;
+            }
+
+            if (newLastChunk != null) {
+                UnsafeUtils.putNextChunk(newLastChunk, newChunk);
+            }
+            newLastChunk = newChunk;
+
+            originalChunk = originalChunk.next;
         }
-        Chunk<R> p = Chunk.empty();
-        for (int i = newValues.length - 1; i >= 1; i--) {
-            p = new Chunk<>(p, newValues[i], 0);
-        }
-        p = new Chunk<>(p, newValues[0], headChunk.firstValueIndex);
-        return new MatrixList<R>(p, chunkSize, size);
+        UnsafeUtils.putNextChunk(newLastChunk, Chunk.empty());
+
+        return new MatrixList<R>(newHeadChunk, chunkSize, size());
     }
 
     @Override
@@ -243,7 +247,7 @@ public class MatrixList<E> implements List<E> {
 
     @Override
     public List<E> filter(Predicate<? super E> predicate) {
-        return new LazyFilteredMatrixList<E>(headChunk, chunkSize, size, predicate);
+        return new LazyFilteredMatrixList<E>(headChunk, chunkSize, size(), predicate);
     }
 
     @Override
@@ -276,7 +280,7 @@ public class MatrixList<E> implements List<E> {
         if (hash != 0 || headChunk == Chunk.empty()) return hash;
 
         hash = headChunk.hashCode();
-        hash = 31 * hash + size;
+        hash = 31 * hash + size();
         return hash;
     }
 
